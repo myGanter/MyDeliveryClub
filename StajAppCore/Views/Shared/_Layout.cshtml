@@ -1,0 +1,59 @@
+﻿@model IEnumerable<StajAppCore.Models.MenuItem>
+@using StajAppCore.Helpers;
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="~/css/site.css" />
+
+    <script src="~/lib/Vue/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.js"
+            integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+            crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <div id="App">
+        <nav class="navbar navbar-expand-lg navba-dark bg-dark">
+            <div class="container">
+                <a href="@Url.RouteUrl(new { controller = "Main", action = "Index" })" class="navbar-brand">
+                    <img src="~/images/Logo.ico" width="40" height="40" alt="logo" />
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse"
+                        data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <img src="~/images/MenuButton.png" width="30" height="30" alt="logo" />
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    @Html.BuildMenu(Model)
+
+                    @{await Html.RenderPartialAsync("_Autentication");}
+                </div>
+            </div>
+        </nav>
+
+        <div class="container">
+            <transition name="component-fade" mode="out-in">
+                <component v-bind:is="currentView"></component>
+            </transition>
+        </div>
+    </div>
+
+    @RenderBody()
+
+    <footer>
+        
+    </footer>
+
+    <script src="~/js/RootComponent.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" crossorigin="anonymous"></script>
+</body>
+</html>

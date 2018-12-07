@@ -1,0 +1,105 @@
+﻿@if ((bool)ViewData["ERROR"])
+{
+    <script src="~/js/ValidationError.js"></script>
+}
+<ul class="nav navbar-nav navbar-right">
+    @if (ViewData["UserName"] != null)
+    {
+        <li class="mr-3 mt-1">
+            <img src="~/images/UserIcon.png" width="30" height="30" alt="logo" />
+            <button class="btn btn-info">@ViewData["UserName"]</button>
+        </li>
+        <li class="mt-1">
+            <a href="@Url.RouteUrl(new { controller = "Account", action = "Logout" })">
+                <button class="btn btn-info">Выйти</button>
+            </a>
+        </li>
+    }
+    else
+    {
+        <li class="mr-3 mt-1">
+            <button class="btn btn-info" data-toggle="modal" data-target="#loginModal">Войти</button>
+        </li>
+        <li class="mt-1">
+            <button class="btn btn-info" data-toggle="modal" data-target="#registerModal">Регистрация</button>
+        </li>
+
+        <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Вход</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="login" action="@Url.RouteUrl(new { controller = "Account", action = "Login" })" method="POST">
+
+                            <div class="form-group">
+                                <label for="logMail">Email</label>
+                                <input type="text" class="form-control" id="logMail" name="Email">
+                            </div>
+                            <div class="form-group">
+                                <label for="logPaswd">Пароль</label>
+                                <input type="password" class="form-control" id="logPaswd" name="Password">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Войти</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Регистрация</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="register" action="@Url.RouteUrl(new { controller = "Account", action = "Register" })" method="POST">
+
+                            <div class="form-group">
+                                <label for="name">Имя</label>
+                                <input type="text" class="form-control" id="name" name="Name">
+                            </div>
+                            <div class="form-group">
+                                <label for="mail">Email</label>
+                                <input type="text" class="form-control" id="mail" name="Email">
+                            </div>
+                            <div class="form-group">
+                                <label for="paswd">Пароль</label>
+                                <input type="password" class="form-control" id="paswd" name="Password">
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmPasswd">Пароль ещё раз</label>
+                                <input type="password" class="form-control" id="confirmPasswd" name="ConfirmPassword">
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Телефон</label>
+                                <input type="password" class="form-control" id="phone" name="Phone">
+                            </div>
+                            <div class="form-group">
+                                <label for="role">Роль</label>
+                                <select class="form-control" id="role" name="RoleId">
+                                    @foreach (var Role in (IEnumerable<StajAppCore.Models.Auth.Role>)ViewData["Roles"])
+                                    {
+                                        <option value="@Role.Id">@Role.Name</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Зарегистрировать</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</ul>
+
