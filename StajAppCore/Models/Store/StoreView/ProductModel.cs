@@ -25,4 +25,15 @@ namespace StajAppCore.Models.Store.StoreView
                 Price = ProdM.Price
             };
     }
+
+    public static class ProductModelEX
+    {
+        public static IEnumerable<Product> ToIEnumerableProduct(this IEnumerable<ProductModel> products)
+        {
+            List<Product> newProducts = new List<Product>();
+            foreach (var i in products)
+                newProducts.Add((Product)i);
+            return newProducts;
+        }
+    }
 }

@@ -8,17 +8,18 @@ using Microsoft.EntityFrameworkCore;
 using StajAppCore.Models;
 using StajAppCore.Models.Auth;
 using StajAppCore.Services;
+using StajAppCore.Services.Repositories.RepositoryBuilder;
 
 namespace StajAppCore.Controllers
 {
     public class MainController : Controller
     {
-        private ApplicationContext DBContext;
+        private IRepositoryBuilder RepositoryBuilder;
         private RoleMaster RoleM;
 
-        public MainController(ApplicationContext context, RoleMaster rM)
+        public MainController(IRepositoryBuilder rb, RoleMaster rM)
         {
-            DBContext = context;
+            RepositoryBuilder = rb;
             RoleM = rM;
         }
 
@@ -26,11 +27,11 @@ namespace StajAppCore.Controllers
         {
             ViewData["ERROR"] = EROOR;
 
-            User us = await DBContext.GetUserAsync(User.Identity.Name);
+            User us = await RepositoryBuilder.AuthRepository.GetUserByEmailAsync(User.Identity.Name, true);
             if (us != null)
             {
                 ViewData["UserName"] = us.Name == null ? us.Email : us.Name;
-                string roleName = RoleM.GetRoles().FirstOrDefault(i => i.Id == us.RoleId).Name;
+                string roleName = us.Role.Name;
                 return View(RoleM.GetViewRole(roleName).Item1, RoleM.GetViewRole(roleName).Item2);
             }
 

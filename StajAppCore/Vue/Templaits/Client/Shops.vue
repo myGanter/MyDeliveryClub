@@ -96,7 +96,7 @@
                                     <button @click="AddProduct()" class="btn btn-success">Добавить товар</button>
                                 </div>
                                 <div class="form-group">
-                                    <button @click="AddUniqOrder()" class="btn btn-primary">Отправить заявку</button>
+                                    <button @click="AddUniqOrder()" data-dismiss="modal" class="btn btn-primary">Отправить заявку</button>
                                 </div>
                             </div>
                         </div>

@@ -26,6 +26,11 @@ namespace StajAppCore.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Courier)
+                .WithMany(u => u.CourierOrders)
+                .HasForeignKey(o => o.CourierId);
+
             modelBuilder.Entity<OrderProduct>()
             .HasKey(t => new { t.OrderId, t.ProductId });
 

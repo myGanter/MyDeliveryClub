@@ -19,7 +19,7 @@ namespace StajAppCore.Models.Store
         public int CountProduct { get; set; }
     }
 
-    public static class Foo
+    public static class OrderProductEX
     {
         public static IEnumerable<ProductModel> ToIEnumerableProduct(this IEnumerable<OrderProduct> products)
         {

@@ -10,16 +10,19 @@ using StajAppCore.Models;
 using StajAppCore.Models.Account;
 using StajAppCore.Models.Auth;
 using StajAppCore.Services;
+using StajAppCore.Services.Repositories.RepositoryBuilder;
 
 namespace StajAppCore.Controllers
 {
     public class AccountController : Controller
     {
-        private ApplicationContext DBContext;
+        private IRepositoryBuilder RepositoryBuilder;
+        private RoleMaster RM;
 
-        public AccountController(ApplicationContext context)
+        public AccountController(RoleMaster rm, IRepositoryBuilder rb)
         {
-            DBContext = context;
+            RepositoryBuilder = rb;
+            RM = rm;
         }
 
         [HttpPost]
@@ -27,19 +30,23 @@ namespace StajAppCore.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = await DBContext.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
-                if (user == null)
+                var newUser = (User)model;
+                var result = await RepositoryBuilder.AuthRepository.ActionQueueAsync( async i => 
                 {
-                    user = (User)model;
-                    Role userRole = await DBContext.Roles.FirstOrDefaultAsync(r => r.Id == user.RoleId);
-                    if (userRole != null)
-                        user.Role = userRole;
+                    User user = await i.GetUserByEmailAsync(model.Email, false);
+                    if (user == null)
+                    {
+                        await i.AddObjAsync(newUser);
+                        return true;
+                    }
+                    else
+                        return false;
+                }, true);
 
-                    DBContext.Users.Add(user);
-                    await DBContext.SaveChangesAsync();
-
-                    await Authenticate(user);
-                }
+                if (result)
+                    await Authenticate(newUser);
+                else
+                    ModelState.AddModelError("err", "error");
             }
 
             return RedirectToAction("Index", "Main", new { EROOR = !ModelState.IsValid });
@@ -50,11 +57,12 @@ namespace StajAppCore.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = await DBContext.Users
-                    .Include(u => u.Role)
-                    .FirstOrDefaultAsync(u => u.Email == model.Email && u.Password == model.Password);
-                if (user != null)
+                User user = await RepositoryBuilder.AuthRepository.GetUserByEmailAsync(model.Email, true);
+
+                if (user != null && user.Password == model.Password)
                     await Authenticate(user);
+                else
+                    ModelState.AddModelError("err", "error");
             }
 
             return RedirectToAction("Index", "Main", new { EROOR = !ModelState.IsValid });
@@ -72,7 +80,7 @@ namespace StajAppCore.Controllers
             var claims = new List<Claim>
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role?.Name)
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, RM.GetRole((int)user.RoleId)?.Name)
             };
  
             ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,

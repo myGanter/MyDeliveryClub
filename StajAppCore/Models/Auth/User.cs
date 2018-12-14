@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using StajAppCore.Models.Store;
+using StajAppCore.Models.Auth.AuthView;
 
 namespace StajAppCore.Models.Auth
 {
@@ -19,9 +20,20 @@ namespace StajAppCore.Models.Auth
 
         public List<Order> Orders { get; set; }
 
+        public List<Order> CourierOrders { get; set; }
+
         public User()
         {
             Orders = new List<Order>();
+            CourierOrders = new List<Order>();
         }
+
+        public static explicit operator UserModel(User us) =>
+            new UserModel()
+            {
+                Name = us.Name,
+                Email = us.Email,
+                Phone = us.Phone
+            };
     }
 }

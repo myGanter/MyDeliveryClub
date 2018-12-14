@@ -38,6 +38,8 @@ namespace StajAppCore.Services
             return true;
         }
 
+        public Role GetRole(int id) => AllRoles.FirstOrDefault(i => i.Id == id);
+
         public Role[] GetRoles() => AllRoles.ToArray();
 
         public static void AddRoleException(string roleName) => RolesException.Add(roleName);

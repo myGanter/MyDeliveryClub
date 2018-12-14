@@ -8,16 +8,19 @@ using StajAppCore.Models;
 using Microsoft.EntityFrameworkCore;
 using StajAppCore.Models.Store;
 using StajAppCore.Models.Auth;
+using StajAppCore.Models.Auth.AuthView;
 using StajAppCore.Models.Store.StoreView;
+using StajAppCore.Services.Repositories.RepositoryBuilder;
 
 namespace StajAppCore.Controllers
 {
     public class UserController : Controller
     {
-        private ApplicationContext bd;
-        public UserController(ApplicationContext bd)
+        private IRepositoryBuilder RepositoryBuilder;
+
+        public UserController(IRepositoryBuilder rb)
         {
-            this.bd = bd;
+            RepositoryBuilder = rb;
         }
 
         [HttpPost]
@@ -27,19 +30,29 @@ namespace StajAppCore.Controllers
             if (ModelState.IsValid)
             {
                 Order newOreder = (Order)order;
-                List<Product> products = new List<Product>();
-                foreach (var i in order.Products)
-                    products.Add((Product)i);
+                List<Product> products = (List<Product>)order.Products.ToIEnumerableProduct();
+                newOreder.UserId = (await RepositoryBuilder.AuthRepository.GetUserByEmailAsync(User.Identity.Name, false)).Id;
 
-                newOreder.UserId = (await bd.GetUserAsync(User.Identity.Name)).Id;
-                await bd.Products.AddRangeAsync(products);
-                await bd.Orders.AddAsync(newOreder);
-                for (int i = 0; i < products.Count; i++)
+                var result = await RepositoryBuilder.OrderRepository.ActionQueueAsync( async i => 
                 {
-                    newOreder.OrderProduct.Add(new OrderProduct() { OrderId = newOreder.Id, ProductId = products[i].Id, CountProduct = order.Products[i].Count });
-                }
+                    await i.AddObjAsync(newOreder);
+                    await RepositoryBuilder.ProductRepository.AddRangeAsync(products);
 
-                await bd.SaveChangesAsync();
+                    for (int j = 0; j < products.Count; j++)
+                    {
+                        newOreder.OrderProduct.Add(new OrderProduct()
+                        {
+                            OrderId = newOreder.Id,
+                            ProductId = products[j].Id,
+                            CountProduct = order.Products[j].Count
+                        });
+                    }
+
+                    return true;
+                }, true );
+
+                if (!result)
+                    ModelState.AddModelError("err", "error");
             }
 
             return Json(new { error = ModelState.IsValid ? false : true });
@@ -49,30 +62,34 @@ namespace StajAppCore.Controllers
         [Authorize(Roles = "Пользователь")]
         public async Task<IActionResult> GetUserOrders()
         {
-            User us = await bd.GetUserAsync(User.Identity.Name);
-            var orders = await bd.Orders.Where(i => i.UserId == us.Id && !i.Delivered).Include(i => i.OrderProduct).ThenInclude(sc => sc.Product).ToListAsync();
-            List<OrderModel> vueOrders = new List<OrderModel>();
-            foreach (var i in orders)
-            {
-                OrderModel bar = (OrderModel)i;
-                bar.Products = (List<ProductModel>)i.OrderProduct.ToIEnumerableProduct();
-                vueOrders.Add(bar);
-            }
+            User us = await RepositoryBuilder.AuthRepository.GetUserByEmailAsync(User.Identity.Name, false);
+            IEnumerable<Order> orders = await RepositoryBuilder.OrderRepository.GetOrdersByUserAsync(us.Id);
+            IEnumerable<OrderModel> vueOrders = orders.ToIenumerableOrderModel(i => i.Courier, i => i.CourierDelivered);
 
             return Json(vueOrders);
         }
 
         [HttpGet]
         [Authorize(Roles = "Пользователь")]
-        public async Task<IActionResult> ConfirmOrder(int id)
+        public async Task<IActionResult> ConfirmUserOrder(int id)
         {
-            User us = await bd.GetUserAsync(User.Identity.Name);
-            var order = await bd.Orders.FirstOrDefaultAsync(i => i.Id == id );
-            if (order != null)
-                order.Delivered = true;
+            var result = await RepositoryBuilder.OrderRepository.ActionQueueAsync( async i => 
+            {
+                User us = await RepositoryBuilder.AuthRepository.GetUserByEmailAsync(User.Identity.Name, false);
+                Order usOrder = await i.GetObjByIdAsync(id);
+                if (usOrder != null && usOrder.UserId == us.Id)
+                {
+                    usOrder.Delivered = true;
+                    return true;
+                }
+                return false;
 
-            await bd.SaveChangesAsync();
-            return Json(new { error = false });
+            }, true);
+
+            if (result)
+                return Json(new { error = false });
+
+            return Json(new { error = true });
         }
     }
 }

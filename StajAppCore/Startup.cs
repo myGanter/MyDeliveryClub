@@ -12,7 +12,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StajAppCore.Models;
+using StajAppCore.Models.Auth;
 using StajAppCore.Services;
+using StajAppCore.Services.Repositories.RepositoryBuilder;
 
 namespace StajAppCore
 {
@@ -65,9 +67,11 @@ namespace StajAppCore
             });
             RoleMaster.AddRoleForView("Курьер", "CourierPanel", new MenuItem[]
             {
-                new MenuItem() { Name = "Активные заказы", Url = "tab1" },
+                new MenuItem() { Name = "Заказы пользователей", Url = "tab1" },
                 new MenuItem() { Name = "Принятые заказы", Url = "tab2" }
             });
+
+            services.AddTransient<IRepositoryBuilder, RepositoryBuilder>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

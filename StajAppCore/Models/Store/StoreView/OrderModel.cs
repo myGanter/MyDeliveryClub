@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StajAppCore.Models.Auth.AuthView;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -15,6 +16,9 @@ namespace StajAppCore.Models.Store.StoreView
         public string DeliveryAddress { get; set; }
         [Required]
         public List<ProductModel> Products { get; set; }
+
+        public UserModel UserOppositeSide { get; set; }
+        public bool DeliveredOppositeSide { get; set; }
 
         public static explicit operator Order (OrderModel OrM) => 
             new Order()
