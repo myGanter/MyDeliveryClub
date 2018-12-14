@@ -31,7 +31,7 @@ namespace StajAppCore
         }
 
         public void ConfigureServices(IServiceCollection services)
-        {
+        {        
             services.Configure<CookiePolicyOptions>(options =>
             {
                 options.CheckConsentNeeded = context => true;
@@ -53,19 +53,25 @@ namespace StajAppCore
                 });
 
             services.AddTransient<RoleMaster>();
-            RoleMaster.AddRoleException("Администратор");
-            RoleMaster.AddRoleForView("Администратор", "AdminPanel", new MenuItem[] 
+
+            Role admin = new Role { Id = 1, Name = "Администратор" };
+            Role user = new Role { Id = 2, Name = "Пользователь" };
+            Role courier = new Role { Id = 3, Name = "Курьер" };
+            RoleMaster.AddRoles(new Role[] { admin, user, courier });
+
+            RoleMaster.AddRoleException(admin.Name);
+            RoleMaster.AddRoleForView(admin.Name, "AdminPanel", new MenuItem[] 
             {
                 new MenuItem() { Name = "Пользователи", Url = "tab1" },
                 new MenuItem() { Name = "Курьеры", Url = "tab2" },
                 new MenuItem() { Name = "Магазины", Url = "tab3" }
             });
-            RoleMaster.AddRoleForView("Пользователь", "ClientPanel", new MenuItem[]
+            RoleMaster.AddRoleForView(user.Name, "ClientPanel", new MenuItem[]
             {
                 new MenuItem() { Name = "Магазины", Url = "tab1" },
                 new MenuItem() { Name = "Активные заказы", Url = "tab2" }
             });
-            RoleMaster.AddRoleForView("Курьер", "CourierPanel", new MenuItem[]
+            RoleMaster.AddRoleForView(courier.Name, "CourierPanel", new MenuItem[]
             {
                 new MenuItem() { Name = "Заказы пользователей", Url = "tab1" },
                 new MenuItem() { Name = "Принятые заказы", Url = "tab2" }

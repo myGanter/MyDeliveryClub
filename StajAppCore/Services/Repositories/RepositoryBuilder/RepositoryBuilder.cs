@@ -52,6 +52,7 @@ namespace StajAppCore.Services.Repositories.RepositoryBuilder
         public void Dispose()
         {
             DBContext.Dispose();
+            //System.Diagnostics.Debug.WriteLine("DBContext destroed!!!");
         }
     }
 }

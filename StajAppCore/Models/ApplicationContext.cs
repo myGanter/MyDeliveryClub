@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using StajAppCore.Models.Auth;
 using StajAppCore.Models.Store;
+using StajAppCore.Services;
 
 namespace StajAppCore.Models
 {
@@ -47,13 +48,18 @@ namespace StajAppCore.Models
             string adminEmail = "qwerty@mail.ru";
             string adminPassword = "qwerty";
 
-            Role adminRole = new Role { Id = 1, Name = "Администратор" };
-            Role userRole = new Role { Id = 2, Name = "Пользователь" };
-            Role courierRole = new Role { Id = 3, Name = "Курьер" };
-            User adminUser = new User { Id = 1, Email = adminEmail, Password = adminPassword, RoleId = adminRole.Id };
-
-            modelBuilder.Entity<Role>().HasData(new Role[] { adminRole, userRole, courierRole });
-            modelBuilder.Entity<User>().HasData(new User[] { adminUser });
+            RoleMaster rm = new RoleMaster();
+            Role[] roles = rm.GetRoles();
+            
+            User adminUser = new User
+            {
+                Id = 1,
+                Email = adminEmail,
+                Password = adminPassword,
+                RoleId = roles.FirstOrDefault(i => i.Name == "Администратор").Id
+            };
+            modelBuilder.Entity<Role>().HasData(roles);
+            modelBuilder.Entity<User>().HasData(adminUser);
 
             base.OnModelCreating(modelBuilder);
         }

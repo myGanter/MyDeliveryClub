@@ -9,15 +9,12 @@ namespace StajAppCore.Services
 {
     public class RoleMaster
     {
-        private static List<Role> AllRoles;
+        private static List<Role> AllRoles = new List<Role>();
         private static List<string> RolesException = new List<string>();
         private static Dictionary<string, Tuple<string, IEnumerable<MenuItem>>> RoleForView = new Dictionary<string, Tuple<string, IEnumerable<MenuItem>>>();
 
-        public RoleMaster(ApplicationContext context)
-        {
-            if (AllRoles == null)
-                AllRoles = context.Roles.ToList();
-        }
+        public RoleMaster()
+        { }
 
         public Tuple<string, IEnumerable<MenuItem>> GetViewRole(string name) => RoleForView.FirstOrDefault(i => i.Key == name).Value;
 
@@ -41,6 +38,8 @@ namespace StajAppCore.Services
         public Role GetRole(int id) => AllRoles.FirstOrDefault(i => i.Id == id);
 
         public Role[] GetRoles() => AllRoles.ToArray();
+
+        public static void AddRoles(params Role[] roles) => AllRoles.AddRange(roles);
 
         public static void AddRoleException(string roleName) => RolesException.Add(roleName);
 
