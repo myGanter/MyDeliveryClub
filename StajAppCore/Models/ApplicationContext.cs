@@ -16,14 +16,13 @@ namespace StajAppCore.Models
         public DbSet<Shop> Shops { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<DBEroorModel> Errors { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base(options)
         {
             Database.EnsureCreated();
         }
-
-        public async Task<User> GetUserAsync(string name) => await Users.FirstOrDefaultAsync(i => i.Email == name);
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
