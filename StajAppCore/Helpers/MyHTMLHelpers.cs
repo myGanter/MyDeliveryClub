@@ -20,12 +20,13 @@ namespace StajAppCore.Helpers
 
             result.Append("<ul class=\"navbar-nav mr-auto\">");
 
-            foreach (var i in menyItems)
-            {
-                result.Append($"<li class=\"nav-item\"><a href=\"#\" v-on:click=\"swichView('{i.Url}')\" class=\"nav-link tabs-collor\">{i.Name}</a></li>");
-                if (i.LowMenuItem != null)
-                    result.Append(BuildMenu(html, i.LowMenuItem).ToString()); 
-            }
+            if (menyItems != null)
+                foreach (var i in menyItems)
+                {
+                    result.Append($"<li class=\"nav-item\"><a href=\"#\" v-on:click=\"swichView('{i.Url}')\" class=\"nav-link tabs-collor\">{i.Name}</a></li>");
+                    if (i.LowMenuItem != null)
+                        result.Append(BuildMenu(html, i.LowMenuItem).ToString()); 
+                }
 
             result.Append("</ul>");
             return new HtmlString(result.ToString());

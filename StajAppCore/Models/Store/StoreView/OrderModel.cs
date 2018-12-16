@@ -10,9 +10,9 @@ namespace StajAppCore.Models.Store.StoreView
     public class OrderModel
     {
         public int Id { get; set; }
-        [Required]
+        [Required(ErrorMessage = "У вашего заказа должно быть описание")]
         public string Description { get; set; }
-        [Required]
+        [Required(ErrorMessage = "У вашего заказа должен быть адрес доставки")]
         public string DeliveryAddress { get; set; }
         [Required]
         public List<ProductModel> Products { get; set; }

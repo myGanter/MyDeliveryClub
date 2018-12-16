@@ -23,10 +23,9 @@ namespace StajAppCore.Controllers
             RoleM = rM;
         }
 
-        public async Task<IActionResult> Index(bool EROOR = false)
-        {
-            ViewData["ERROR"] = EROOR;
-
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {            
             User us = await RepositoryBuilder.AuthRepository.GetUserByEmailAsync(User.Identity.Name, true);
             if (us != null)
             {
@@ -36,7 +35,7 @@ namespace StajAppCore.Controllers
             }
 
             ViewData["Roles"] = RoleM.GetRoles().Where(i => RoleM.ValidationAllowed(i.Id));
-            return View(RoleM.GetViewRole("Пользователь").Item1, RoleM.GetViewRole("Пользователь").Item2);
+            return View("Hello", null);
         }
     }
 }

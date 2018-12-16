@@ -58,9 +58,12 @@ namespace StajAppCore.Controllers
                 order.CourierId = us.Id;
 
                 return true;
-            }, true);            
-            
-            return Json(new { error = !result });
+            }, true);
+
+            if (result)
+                return Json(new MsgVue("Заказ взят!"));
+
+            return Json(new MsgVue(":("));
         }
 
         [HttpGet]
@@ -81,9 +84,9 @@ namespace StajAppCore.Controllers
             }, true);
 
             if (result)
-                return Json(new { error = false });
+                return Json(new MsgVue("Доставка подтверждена!"));
 
-            return Json(new { error = true });
+            return Json(new MsgVue(":("));
         }
     }
 }

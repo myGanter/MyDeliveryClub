@@ -101,17 +101,22 @@
                     })
                     .catch(error => {
                         console.log(error);
-                        alert('Авторизируйтесь под курьером');
+                        HostApp.showMsg({
+                            message: "Непредвиденная ошибка!!!"
+                        });
                     })
             },
             TakeOrder: function (id) {
                 axios.get('Courier/TakeOrder/' + id).
                     then(response => {
                         this.GetOrders();
-                        console.log(response.data);
+                        HostApp.showMsg(response.data);
                     })
                     .catch(error => {
                         console.log(error);
+                        HostApp.showMsg({
+                            message: "Непредвиденная ошибка!!!"
+                        });
                     })
             }
         }

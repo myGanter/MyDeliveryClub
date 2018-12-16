@@ -8,9 +8,9 @@ namespace StajAppCore.Models.Store.StoreView
 {
     public class ProductModel
     {
-        [Required]
+        [Required(ErrorMessage = "У товара должно быть название")]
         public string Name { get; set; }
-        [Required]
+        [Required(ErrorMessage = "У товара должно быть описание")]
         public string Description { get; set; }
         [Range(1, Int32.MaxValue)]
         public int Price { get; set; }

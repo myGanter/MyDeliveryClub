@@ -95,7 +95,7 @@
                 courier: {}
             }
         },
-        created() {
+        created() {            
             this.GetOrders();
         },
         methods: {
@@ -107,17 +107,22 @@
                     })
                     .catch(error => {
                         console.log(error);
-                        alert('Авторизируйтесь под юзером');
+                        HostApp.showMsg({
+                            message: "Непредвиденная ошибка!!!"
+                        });
                     })
             },
             Confirm: function (id) {
                 axios.get('User/ConfirmUserOrder/' + id).
                     then(response => {
                         this.GetOrders();
-                        console.log(response.data);
+                        HostApp.showMsg(response.data);
                     })
                     .catch(error => {
                         console.log(error);
+                        HostApp.showMsg({
+                            message: "Какая-то ошибка :("
+                        });
                     })
             }
         }

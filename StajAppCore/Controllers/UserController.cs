@@ -50,12 +50,11 @@ namespace StajAppCore.Controllers
 
                     return true;
                 }, true );
-
-                if (!result)
-                    ModelState.AddModelError("err", "error");
+                
+                return Json(new MsgVue("Ваш заказ успешно добавлен!"));
             }
 
-            return Json(new { error = ModelState.IsValid ? false : true });
+            return Json(new MsgVue("Ваш заказ не прошёл проверку.", ModelState.Root.Children));
         }
 
         [HttpGet]
@@ -87,9 +86,9 @@ namespace StajAppCore.Controllers
             }, true);
 
             if (result)
-                return Json(new { error = false });
+                return Json(new MsgVue("Доставка подтверждена!"));
 
-            return Json(new { error = true });
+            return Json(new MsgVue(":("));
         }
     }
 }

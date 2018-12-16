@@ -181,11 +181,13 @@
                 ).
                     then(response => {
                         console.log(response);
-                        alert(response.data.error ? 'Ошибка' : 'Заказ добавлен!');
+                        HostApp.showMsg(response.data);
                     })
                     .catch(error => {
                         console.log(error);
-                        alert('Авторизируйтесь под юзером');
+                        HostApp.showMsg({
+                            message: "Непредвиденная ошибка!!!"
+                        });
                     })
             }
         }

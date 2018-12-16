@@ -20,6 +20,24 @@
 <body>
 
     <div id="App">
+        <transition name="component-fade" mode="out-in">
+            <div v-if="onDisplay" class="modal fade show" style="padding-right: 17px; display: block;" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body tabs-collor" style="background: #343a40;">
+                            <div class="form-group">
+                                <h3>{{msg.message}}</h3>
+                                <ul>
+                                    <li v-for="(item, i) in msg.information">{{item}}</li>
+                                </ul>
+                                <button class="btn btn-info" v-on:click="onDisplay = false">Хорошо</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
+
         <nav class="navbar navbar-expand-lg navba-dark bg-dark">
             <div class="container">
                 <a href="@Url.RouteUrl(new { controller = "Main", action = "Index" })" class="navbar-brand">

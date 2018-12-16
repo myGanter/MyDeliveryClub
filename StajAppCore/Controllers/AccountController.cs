@@ -11,6 +11,7 @@ using StajAppCore.Models.Account;
 using StajAppCore.Models.Auth;
 using StajAppCore.Services;
 using StajAppCore.Services.Repositories.RepositoryBuilder;
+using System.Linq;
 
 namespace StajAppCore.Controllers
 {
@@ -44,12 +45,15 @@ namespace StajAppCore.Controllers
                 }, true);
 
                 if (result)
+                {
                     await Authenticate(newUser);
+                    return RedirectToAction("Index", "Main");
+                }
                 else
-                    ModelState.AddModelError("err", "error");
+                    ModelState.AddModelError("err", "Такой пользователь уже существует!");
             }
 
-            return RedirectToAction("Index", "Main", new { EROOR = !ModelState.IsValid });
+            return GetMainVue(new MsgVue("Что-то не так!", ModelState.Root.Children));
         }
 
         [HttpPost]
@@ -60,12 +64,15 @@ namespace StajAppCore.Controllers
                 User user = await RepositoryBuilder.AuthRepository.GetUserByEmailAsync(model.Email, true);
 
                 if (user != null && user.Password == model.Password)
+                {
                     await Authenticate(user);
+                    return RedirectToAction("Index", "Main");
+                }
                 else
-                    ModelState.AddModelError("err", "error");
+                    ModelState.AddModelError("err", "Неверный логин или пароль");
             }
 
-            return RedirectToAction("Index", "Main", new { EROOR = !ModelState.IsValid });
+            return GetMainVue(new MsgVue("Что-то не так!", ModelState.Root.Children));          
         }
 
         [HttpGet]
@@ -87,6 +94,13 @@ namespace StajAppCore.Controllers
                 ClaimsIdentity.DefaultRoleClaimType);
   
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
+        }
+
+        private IActionResult GetMainVue(MsgVue msg)
+        {
+            ViewData["Roles"] = RM.GetRoles().Where(i => RM.ValidationAllowed(i.Id));           
+            ViewData["ERROR"] = msg;
+            return View("~/Views/Main/Hello.cshtml", null);
         }
     }
 }
