@@ -49,7 +49,7 @@ namespace StajAppCore.Models
 
             RoleMaster rm = new RoleMaster();
             Role[] roles = rm.GetRoles();
-            
+
             User adminUser = new User
             {
                 Id = 1,
@@ -57,6 +57,9 @@ namespace StajAppCore.Models
                 Password = adminPassword,
                 RoleId = roles.FirstOrDefault(i => i.Name == "Администратор").Id
             };
+            PasswdHesher<User> hesher = new PasswdHesher<User>();
+            hesher.SetHeshContSalt(adminUser, adminPassword);
+
             modelBuilder.Entity<Role>().HasData(roles);
             modelBuilder.Entity<User>().HasData(adminUser);
 

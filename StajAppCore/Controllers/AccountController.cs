@@ -12,6 +12,7 @@ using StajAppCore.Models.Auth;
 using StajAppCore.Services;
 using StajAppCore.Services.Repositories.RepositoryBuilder;
 using System.Linq;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
 namespace StajAppCore.Controllers
 {
@@ -19,10 +20,12 @@ namespace StajAppCore.Controllers
     {
         private IRepositoryBuilder RepositoryBuilder;
         private RoleMaster RM;
+        private PasswdHesher<User> PasswdHesh;
 
-        public AccountController(RoleMaster rm, IRepositoryBuilder rb)
+        public AccountController(RoleMaster rm, PasswdHesher<User> ph, IRepositoryBuilder rb)
         {
             RepositoryBuilder = rb;
+            PasswdHesh = ph;
             RM = rm;
         }
 
@@ -37,6 +40,7 @@ namespace StajAppCore.Controllers
                     User user = await i.GetUserByEmailAsync(model.Email, false);
                     if (user == null)
                     {
+                        PasswdHesh.SetHeshContSalt(newUser, newUser.Password);
                         await i.AddObjAsync(newUser);
                         return true;
                     }
@@ -63,7 +67,7 @@ namespace StajAppCore.Controllers
             {
                 User user = await RepositoryBuilder.AuthRepository.GetUserByEmailAsync(model.Email, true);
 
-                if (user != null && user.Password == model.Password)
+                if (user != null && PasswdHesh.VerifyPasswd(user, model.Password))
                 {
                     await Authenticate(user);
                     return RedirectToAction("Index", "Main");

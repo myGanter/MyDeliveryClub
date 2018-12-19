@@ -80,6 +80,7 @@ namespace StajAppCore
             });
 
             services.AddTransient<IRepositoryBuilder, RepositoryBuilder>();
+            services.AddTransient<PasswdHesher<User>>();
 
             services.AddMvc(options =>
             {

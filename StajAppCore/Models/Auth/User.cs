@@ -7,12 +7,13 @@ using StajAppCore.Models.Auth.AuthView;
 
 namespace StajAppCore.Models.Auth
 {
-    public class User
+    public class User : IUser
     {
         public int Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
+        public string Salt { get; set;}
         public string Phone { get; set; }
 
         public int? RoleId { get; set; }
