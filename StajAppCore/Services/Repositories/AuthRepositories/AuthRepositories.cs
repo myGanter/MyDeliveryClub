@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using StajAppCore.Models;
 using System.Threading.Tasks;
 using StajAppCore.Models.Auth;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using StajAppCore.Models;
 
 namespace StajAppCore.Services.Repositories.AuthRepositories
 {

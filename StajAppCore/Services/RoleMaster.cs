@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using StajAppCore.Models.Auth;
 using StajAppCore.Models;
+using StajAppCore.Models.Auth;
+using System.Collections.Generic;
 
 namespace StajAppCore.Services
 {

@@ -1,8 +1,5 @@
-﻿using System;
+﻿using StajAppCore.Models.Store;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using StajAppCore.Models.Store;
 using StajAppCore.Models.Auth.AuthView;
 
 namespace StajAppCore.Models.Auth

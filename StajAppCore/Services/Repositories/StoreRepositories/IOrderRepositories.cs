@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using StajAppCore.Models.Store;
-using StajAppCore.Services.Repositories.AuthRepositories;
+using System.Collections.Generic;
 
 namespace StajAppCore.Services.Repositories.StoreRepositories
 {

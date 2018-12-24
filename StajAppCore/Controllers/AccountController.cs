@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Linq;
+using StajAppCore.Models;
+using StajAppCore.Services;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using StajAppCore.Models.Auth;
+using Microsoft.AspNetCore.Mvc;
+using StajAppCore.Models.Account;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using StajAppCore.Models;
-using StajAppCore.Models.Account;
-using StajAppCore.Models.Auth;
-using StajAppCore.Services;
 using StajAppCore.Services.Repositories.RepositoryBuilder;
-using System.Linq;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
 namespace StajAppCore.Controllers
 {

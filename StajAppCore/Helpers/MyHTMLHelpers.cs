@@ -1,11 +1,8 @@
-﻿using System;
+﻿using System.IO;
 using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.IO;
 using StajAppCore.Models;
 using Microsoft.AspNetCore.Html;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace StajAppCore.Helpers

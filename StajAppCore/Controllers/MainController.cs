@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using StajAppCore.Models;
-using StajAppCore.Models.Auth;
+﻿using System.Linq;
 using StajAppCore.Services;
+using System.Threading.Tasks;
+using StajAppCore.Models.Auth;
+using Microsoft.AspNetCore.Mvc;
 using StajAppCore.Services.Repositories.RepositoryBuilder;
 
 namespace StajAppCore.Controllers

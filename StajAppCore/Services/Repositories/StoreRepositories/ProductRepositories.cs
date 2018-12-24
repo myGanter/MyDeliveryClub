@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using StajAppCore.Models;
 using System.Threading.Tasks;
 using StajAppCore.Models.Store;
-using StajAppCore.Models;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
 namespace StajAppCore.Services.Repositories.StoreRepositories

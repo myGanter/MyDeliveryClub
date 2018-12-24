@@ -1,10 +1,6 @@
-﻿using StajAppCore.Models.Auth;
-using System;
-using System.Collections.Generic;
+﻿using StajAppCore.Attributes;
+using StajAppCore.Models.Auth;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using StajAppCore.Attributes;
 
 namespace StajAppCore.Models.Account
 {
