@@ -16,6 +16,7 @@ namespace StajAppCore.Models.Store.StoreView
 
         public UserModel UserOppositeSide { get; set; }
         public bool DeliveredOppositeSide { get; set; }
+        public bool UserCancelled { get; set; }
 
         public static explicit operator Order (OrderModel OrM) => 
             new Order()

@@ -51,7 +51,10 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <button @click="Confirm(item.id)" class="btn btn-success">Заказ принят!</button>
+                    <button @click="Confirm(item.id, false)" class="btn btn-success">Заказ принят!</button>                    
+                </div>
+                <div class="form-group">                    
+                    <button @click="Confirm(item.id, true)" class="btn btn-danger">Отменить заказ</button>                    
                 </div>
                 <br />
                 {{item.id}}
@@ -112,8 +115,8 @@
                         });
                     })
             },
-            Confirm: function (id) {
-                axios.get('User/ConfirmUserOrder/' + id).
+            Confirm: function (id, cancelled) {
+                axios.get('User/ConfirmUserOrder?id=' + id + '&cancelled=' + cancelled).
                     then(response => {
                         this.GetOrders();
                         HostApp.showMsg(response.data);

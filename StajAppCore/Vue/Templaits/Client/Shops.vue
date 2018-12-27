@@ -165,7 +165,7 @@
                 if (this.order.Products[i].Count > 1)
                     this.order.Products[i].Count--;
             },
-            AddUniqOrder: function () {
+            AddUniqOrder: function () {                             
                 for (var i = 2; i <= this.orderCounter; i++)
                     if ($('#order' + i).length) {
                         this.order.Products.push({
@@ -175,7 +175,7 @@
                             Count: $('#countOrder' + i).text()
                         });
                     }
-                console.log(this.order);        
+                console.log(this.order);  
                 axios.post('User/AddUniqOrder',
                     this.order
                 ).
@@ -189,6 +189,11 @@
                             message: "Непредвиденная ошибка!!!"
                         });
                     })
+                this.order = {
+                    Description: '',
+                    DeliveryAddress: '',
+                    Products: [{ Name: '', Description: '', Price: 1, Count: 1 }]
+                };
             }
         }
     })

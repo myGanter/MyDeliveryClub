@@ -96,7 +96,7 @@ namespace StajAppCore.Services.Repositories.StoreRepositories
         public async Task<IEnumerable<Order>> GetOrdersByUserAsync(int id)
         {           
             var orders = await DBContext.Orders
-                .Where(i => i.UserId == id && !i.Delivered)
+                .Where(i => i.UserId == id && !i.Delivered && !i.UserCancelled)
                 .Include(i => i.Courier)
                 .Include(i => i.OrderProduct)
                 .ThenInclude(sc => sc.Product)
@@ -108,7 +108,7 @@ namespace StajAppCore.Services.Repositories.StoreRepositories
         public async Task<IEnumerable<Order>> GetAllOrdersAsync()
         {
             var orders = await DBContext.Orders
-                .Where(i => !i.Delivered && i.CourierId == null)
+                .Where(i => !i.Delivered && i.CourierId == null && !i.UserCancelled)
                 .Include(i => i.User)
                 .Include(i => i.OrderProduct)
                 .ThenInclude(sc => sc.Product)

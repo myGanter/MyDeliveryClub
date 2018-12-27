@@ -66,7 +66,7 @@ namespace StajAppCore.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Пользователь")]
-        public async Task<IActionResult> ConfirmUserOrder(int id)
+        public async Task<IActionResult> ConfirmUserOrder(int id, bool cancelled)
         {
             var result = await RepositoryBuilder.OrderRepository.ActionQueueAsync( async i => 
             {
@@ -74,7 +74,10 @@ namespace StajAppCore.Controllers
                 Order usOrder = await i.GetObjByIdAsync(id);
                 if (usOrder != null && usOrder.UserId == us.Id)
                 {
-                    usOrder.Delivered = true;
+                    if (cancelled)
+                        usOrder.UserCancelled = true;
+                    else
+                        usOrder.Delivered = true;
                     return true;
                 }
                 return false;
@@ -82,7 +85,7 @@ namespace StajAppCore.Controllers
             }, true);
 
             if (result)
-                return Json(new MsgVue("Доставка подтверждена!"));
+                return Json(new MsgVue("Готово!"));
 
             return Json(new MsgVue(":("));
         }

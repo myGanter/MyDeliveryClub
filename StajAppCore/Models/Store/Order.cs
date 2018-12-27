@@ -11,6 +11,7 @@ namespace StajAppCore.Models.Store
         public int Id { get; set; }
         public string Description { get; set; }
         public string DeliveryAddress { get; set; }
+        public bool UserCancelled { get; set; } = false;
         public bool Delivered { get; set; } = false;
         public bool CourierDelivered { get; set; } = false;
 
@@ -32,7 +33,8 @@ namespace StajAppCore.Models.Store
             {
                 Id = order.Id,
                 DeliveryAddress = order.DeliveryAddress,
-                Description = order.Description
+                Description = order.Description,
+                UserCancelled = order.UserCancelled
             };
     }
 

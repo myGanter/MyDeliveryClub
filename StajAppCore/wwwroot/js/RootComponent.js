@@ -6,9 +6,9 @@
         onDisplay: false,
         logDisplay: true
     },
-    //created() {
-        
-    //},
+    created() {
+        $('#MsgWindow').css('display', 'block');
+    },
     methods: {
         swichView: function (view) {
             this.currentView = view;

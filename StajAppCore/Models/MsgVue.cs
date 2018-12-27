@@ -17,10 +17,18 @@ namespace StajAppCore.Models
 
         public MsgVue(string message, IReadOnlyList<ModelStateEntry> info) : this(message)
         {
-            foreach(var i in info)
+            InitInformation(info);
+        }
+
+        private void InitInformation(IReadOnlyList<ModelStateEntry> info)
+        {
+            foreach (var i in info)
             {
+                if (i.Children != null)
+                    InitInformation(i.Children);
+
                 if (i.ValidationState == ModelValidationState.Invalid)
-                {   
+                {
                     foreach (var er in i.Errors)
                         Information.Add(er.ErrorMessage);
                 }

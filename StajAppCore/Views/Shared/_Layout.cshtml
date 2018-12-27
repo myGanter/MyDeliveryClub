@@ -21,7 +21,7 @@
 
     <div id="App">
         <transition name="component-fade" mode="out-in">
-            <div v-if="onDisplay" class="modal fade show" style="padding-right: 17px; display: block;" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div id="MsgWindow" v-if="onDisplay" class="modal fade show" style="padding-right: 17px; display: none;" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-body tabs-collor" style="background: #343a40;">

@@ -8,7 +8,18 @@
         <br /><br />
         <div v-for="(item, i) in activeOrders" class="row">
             <div class="col-lg-3 col-md-3 col-sm-3"></div>
-            <div class="col-lg-6 col-md-6 col-sm-6 active-order">
+            <div v-if="item.userCancelled" class="col-lg-6 col-md-6 col-sm-6 active-order">
+                <div class="form-group">
+                    <h3 class="mt-4 text-danger">Пользователь отменил заказ :(</h3>
+                </div>
+                <div class="form-group">
+                    <button @click="client = item.userOppositeSide" type="button" data-toggle="modal" data-target="#client-from-order" class="btn btn-warning">Показать пользователя</button>
+                </div>
+                <div class="form-group">
+                    <button @click="Confirm(item.id)" class="btn btn-success">Закрыть доставку!</button>
+                </div>
+            </div>
+            <div v-else class="col-lg-6 col-md-6 col-sm-6 active-order">
                 <p>
                     Статус подтверждения доставки пользователем
                     <img v-if="item.deliveredOppositeSide" src="/images/GreenY.ico" width="35" height="35" />
