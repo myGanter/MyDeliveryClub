@@ -13,7 +13,7 @@ using StajAppCore.Services.Repositories.RepositoryBuilder;
 
 namespace StajAppCore.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
         private IRepositoryBuilder RepositoryBuilder;
         private RoleMaster RM;

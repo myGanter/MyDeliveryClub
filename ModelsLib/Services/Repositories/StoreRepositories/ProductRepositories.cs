@@ -19,20 +19,32 @@ namespace StajAppCore.Services.Repositories.StoreRepositories
 
         public bool ActionQueue(Func<IProductRepositories, bool> queue, bool invokeSaveChanges)
         {
-            var resalt = queue(this);
+            bool resalt = false;
+            using (var transaction = DBContext.Database.BeginTransaction())
+            {
+                resalt = queue(this);
 
-            if (invokeSaveChanges)
-                SaveChanges();
+                if (invokeSaveChanges)
+                    SaveChanges();
+
+                transaction.Commit();
+            }
 
             return resalt;
         }
 
         public async Task<bool> ActionQueueAsync(Func<IProductRepositories, Task<bool>> queue, bool invokeSaveChanges)
         {
-            var resalt = await queue(this);
+            bool resalt = false;
+            using (var transaction = await DBContext.Database.BeginTransactionAsync())
+            {
+                resalt = await queue(this);
 
-            if (invokeSaveChanges)
-                await SaveChangesAsync();
+                if (invokeSaveChanges)
+                    await SaveChangesAsync();
+
+                transaction.Commit();
+            }
 
             return resalt;
         }

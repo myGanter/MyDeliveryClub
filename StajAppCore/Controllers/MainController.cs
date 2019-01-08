@@ -7,7 +7,7 @@ using StajAppCore.Services.Repositories.RepositoryBuilder;
 
 namespace StajAppCore.Controllers
 {
-    public class MainController : Controller
+    public class MainController : BaseController
     {
         private IRepositoryBuilder RepositoryBuilder;
         private RoleMaster RoleM;

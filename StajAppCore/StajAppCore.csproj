@@ -14,4 +14,8 @@
     <None Include="wwwroot\js\RootComponent.js" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ModelsLib\ModelsLib.csproj" />
+  </ItemGroup>
+
 </Project>

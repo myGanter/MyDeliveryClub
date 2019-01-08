@@ -10,7 +10,7 @@ using StajAppCore.Services.Repositories.RepositoryBuilder;
 
 namespace StajAppCore.Controllers
 {
-    public class UserController : Controller
+    public class UserController : BaseController
     {
         private IRepositoryBuilder RepositoryBuilder;
 
@@ -20,7 +20,7 @@ namespace StajAppCore.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Пользователь")]
+        [Authorize(Roles = Client)]
         public async Task<IActionResult> AddUniqOrder([FromBody]OrderModel order)
         {
             if (ModelState.IsValid)
@@ -30,7 +30,7 @@ namespace StajAppCore.Controllers
                 newOreder.UserId = (await RepositoryBuilder.AuthRepository.GetUserByEmailAsync(User.Identity.Name, false)).Id;
 
                 var result = await RepositoryBuilder.OrderRepository.ActionQueueAsync( async i => 
-                {
+                {                   
                     await i.AddObjAsync(newOreder);
                     await RepositoryBuilder.ProductRepository.AddRangeAsync(products);
 
@@ -46,15 +46,15 @@ namespace StajAppCore.Controllers
 
                     return true;
                 }, true );
-                
-                return Json(new MsgVue("Ваш заказ успешно добавлен!"));
+
+                return Data("Ваш заказ успешно добавлен!");
             }
 
-            return Json(new MsgVue("Ваш заказ не прошёл проверку.", ModelState.Root.Children));
+            return Data("Ваш заказ не прошёл проверку.", ModelState.Root.Children);
         }
 
         [HttpGet]
-        [Authorize(Roles = "Пользователь")]
+        [Authorize(Roles = Client)]
         public async Task<IActionResult> GetUserOrders()
         {
             User us = await RepositoryBuilder.AuthRepository.GetUserByEmailAsync(User.Identity.Name, false);
@@ -65,7 +65,7 @@ namespace StajAppCore.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Пользователь")]
+        [Authorize(Roles = Client)]
         public async Task<IActionResult> ConfirmUserOrder(int id, bool cancelled)
         {
             var result = await RepositoryBuilder.OrderRepository.ActionQueueAsync( async i => 
@@ -85,9 +85,9 @@ namespace StajAppCore.Controllers
             }, true);
 
             if (result)
-                return Json(new MsgVue("Готово!"));
+                return Data("Готово!");
 
-            return Json(new MsgVue(":("));
+            return Data(":(");
         }
     }
 }

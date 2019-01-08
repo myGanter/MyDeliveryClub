@@ -10,7 +10,7 @@ using StajAppCore.Services.Repositories.RepositoryBuilder;
 
 namespace StajAppCore.Controllers
 {
-    public class CourierController : Controller
+    public class CourierController : BaseController
     {
         private IRepositoryBuilder RepositoryBuilder;
 
@@ -20,7 +20,7 @@ namespace StajAppCore.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Курьер")]
+        [Authorize(Roles = Courier)]
         public async Task<IActionResult> GetAllOrders()
         {
             IEnumerable<Order> orders = await RepositoryBuilder.OrderRepository.GetAllOrdersAsync();
@@ -30,7 +30,7 @@ namespace StajAppCore.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Курьер")]
+        [Authorize(Roles = Courier)]
         public async Task<IActionResult> GetCourierOrders()
         {
             User us = await RepositoryBuilder.AuthRepository.GetUserByEmailAsync(User.Identity.Name, false);
@@ -41,7 +41,7 @@ namespace StajAppCore.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Курьер")]
+        [Authorize(Roles = Courier)]
         public async Task<IActionResult> TakeOrder(int id)
         {
             var result = await RepositoryBuilder.OrderRepository.ActionQueueAsync(async i => 
@@ -57,13 +57,13 @@ namespace StajAppCore.Controllers
             }, true);
 
             if (result)
-                return Json(new MsgVue("Заказ взят!"));
+                return Data("Заказ взят!");
 
-            return Json(new MsgVue(":("));
+            return Data(":(");
         }
 
         [HttpGet]
-        [Authorize(Roles = "Курьер")]
+        [Authorize(Roles = Courier)]
         public async Task<IActionResult> ConfirmOrderCourier(int id)
         {
             var result = await RepositoryBuilder.OrderRepository.ActionQueueAsync(async i =>
@@ -80,9 +80,9 @@ namespace StajAppCore.Controllers
             }, true);
 
             if (result)
-                return Json(new MsgVue("Доставка подтверждена!"));
+                return Data("Доставка подтверждена!");
 
-            return Json(new MsgVue(":("));
+            return Data(":("); 
         }
     }
 }
