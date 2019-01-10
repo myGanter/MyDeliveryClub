@@ -24,10 +24,11 @@ namespace StajAppCore.Services.Repositories.StoreRepositories
             {
                 resalt = queue(this);
 
-                if (invokeSaveChanges)
+                if (invokeSaveChanges && resalt)
                     SaveChanges();
-
-                transaction.Commit();
+                
+                if (resalt)
+                    transaction.Commit();
             }
 
             return resalt;
@@ -40,10 +41,11 @@ namespace StajAppCore.Services.Repositories.StoreRepositories
             {
                 resalt = await queue(this);
 
-                if (invokeSaveChanges)
+                if (invokeSaveChanges && resalt)
                     await SaveChangesAsync();
-
-                transaction.Commit();
+                
+                if (resalt)
+                    transaction.Commit();
             }
 
             return resalt;

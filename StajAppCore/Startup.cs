@@ -7,8 +7,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using StajAppCore.Services.MessageSending;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using StajAppCore.Services.MessageSending.MailMass;
 using StajAppCore.Services.Repositories.RepositoryBuilder;
 
 namespace StajAppCore
@@ -34,7 +36,7 @@ namespace StajAppCore
             });
 
             string connection = Configuration.GetConnectionString("DefaultConnection");
-            connection = connection.Replace("%ROOTPATH%", RootPath);
+            connection = connection.Replace("%ROOTPATH%", RootPath);            
 
             Helpers.MyHTMLHelpers.RootPath = RootPath;
 
@@ -73,12 +75,18 @@ namespace StajAppCore
             });
 
             services.AddTransient<IRepositoryBuilder, RepositoryBuilder>();
-            services.AddTransient<PasswdHesher<User>>();
+            services.AddTransient<PasswdHesher<IHesh>>();            
 
             services.AddMvc(options =>
             {
                 options.Filters.Add(typeof(ExceptionDBLog));
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            MailOptions mailSendOpt = Configuration.
+                                      GetSection("EmailConfiguration").
+                                      Get<MailOptions>();
+            MailMassService.MailPagePath = $"{RootPath}//wwwroot//html//MailPage.html";
+            services.AddScoped<IMass>(provider => new MailMassService(mailSendOpt));
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

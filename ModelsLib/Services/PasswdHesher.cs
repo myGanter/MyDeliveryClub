@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
 namespace StajAppCore.Services
 {
-    public class PasswdHesher<T> where T: IUser
+    public class PasswdHesher<T> where T: IHesh
     {
         public bool SetHeshContSalt(T us, string passwd)
         {

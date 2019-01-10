@@ -14,6 +14,7 @@ namespace StajAppCore.Models
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<DBEroorModel> Errors { get; set; }
+        public DbSet<UserGuid> UserGuids { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base(options)
@@ -52,7 +53,8 @@ namespace StajAppCore.Models
                 Id = 1,
                 Email = adminEmail,
                 Password = adminPassword,
-                RoleId = roles.FirstOrDefault(i => i.Name == "Администратор").Id
+                RoleId = roles.FirstOrDefault(i => i.Name == "Администратор").Id,
+                Active = true
             };
             PasswdHesher<User> hesher = new PasswdHesher<User>();
             hesher.SetHeshContSalt(adminUser, adminPassword);

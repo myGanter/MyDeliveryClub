@@ -16,11 +16,12 @@ namespace StajAppCore.Services
         public void OnException(ExceptionContext context)
         {
             DBEroorModel error = new DBEroorModel();
-            error.Name = context.HttpContext.User.Identity.Name;
+            error.Name = context.HttpContext?.User.Identity.Name;
             error.Exception = context.Exception.Message;
             error.StackTrace = context.Exception.StackTrace;
             error.Data = DateTime.Now;
-            error.Url = context.HttpContext.Request.Host + context.HttpContext.Request.Path;
+            error.Url = context.HttpContext?.Request.Host + context.HttpContext?.Request.Path;
+
             AppDB.Errors.Add(error);
             AppDB.SaveChanges();
         }

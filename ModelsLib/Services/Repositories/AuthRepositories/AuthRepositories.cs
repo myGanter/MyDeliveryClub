@@ -24,10 +24,11 @@ namespace StajAppCore.Services.Repositories.AuthRepositories
             {
                 resalt = queue(this);
 
-                if (invokeSaveChanges)
+                if (invokeSaveChanges && resalt)
                     SaveChanges();
 
-                transaction.Commit();
+                if (resalt)
+                    transaction.Commit();
             }
 
             return resalt;
@@ -40,10 +41,11 @@ namespace StajAppCore.Services.Repositories.AuthRepositories
             {
                 resalt = await queue(this);
 
-                if (invokeSaveChanges)
+                if (invokeSaveChanges && resalt)
                     await SaveChangesAsync();
 
-                transaction.Commit();
+                if (resalt)
+                    transaction.Commit();
             }
 
             return resalt;
@@ -105,20 +107,46 @@ namespace StajAppCore.Services.Repositories.AuthRepositories
             await DBContext.SaveChangesAsync();
         }
 
-        public User GetUserByEmail(string email, bool loadRole)
+        public User GetUserByEmail(string email, bool loadRole, bool confirmd = true)
         {
             var user = loadRole ? 
-                DBContext.Users.Include(i => i.Role).FirstOrDefault(u => u.Email == email) : 
-                DBContext.Users.FirstOrDefault(u => u.Email == email);
+                DBContext.Users.Include(i => i.Role).FirstOrDefault(u => u.Email == email && u.Active == confirmd) : 
+                DBContext.Users.FirstOrDefault(u => u.Email == email && u.Active == confirmd);
             return user;
         }
 
-        public async Task<User> GetUserByEmailAsync(string email, bool loadRole)
+        public async Task<User> GetUserByEmailAsync(string email, bool loadRole, bool confirmd = true)
         {
             var user = loadRole ?
-                await DBContext.Users.Include(i => i.Role).FirstOrDefaultAsync(u => u.Email == email) :
-                await DBContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+                await DBContext.Users.Include(i => i.Role).FirstOrDefaultAsync(u => u.Email == email && u.Active == confirmd) :
+                await DBContext.Users.FirstOrDefaultAsync(u => u.Email == email && u.Active == confirmd);
             return user;
+        }
+
+        public async Task<bool> AddUserGuideAsync(UserGuid ug)
+        {
+            await DBContext.UserGuids.AddAsync(ug);
+            return true;
+        }
+
+        public async Task<UserGuid> GetUserGuideByIdAsync(int id)
+        {
+            return await DBContext.UserGuids.FirstOrDefaultAsync(i => i.Id == id);
+        }
+
+        public async Task<bool> DeleteUserGuideAsync(int id)
+        {
+            var obj = await GetUserGuideByIdAsync(id);
+            DBContext.UserGuids.Remove(obj);
+            return true;
+        }
+
+        public async Task<bool> DeleteUserGuideInUserIdAsync(int id)
+        {
+            var obj = await DBContext.UserGuids.FirstOrDefaultAsync(i => i.UserId == id);
+            if (obj != null)
+                DBContext.UserGuids.Remove(obj);
+            return true;
         }
     }
 }

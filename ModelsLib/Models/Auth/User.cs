@@ -4,7 +4,7 @@ using StajAppCore.Models.Auth.AuthView;
 
 namespace StajAppCore.Models.Auth
 {
-    public class User : IUser
+    public class User : IHesh
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -12,6 +12,7 @@ namespace StajAppCore.Models.Auth
         public string Password { get; set; }
         public string Salt { get; set;}
         public string Phone { get; set; }
+        public bool Active { get; set; }
 
         public int? RoleId { get; set; }
         public Role Role { get; set; }

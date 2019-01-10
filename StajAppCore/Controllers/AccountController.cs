@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using StajAppCore.Models;
 using StajAppCore.Services;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using StajAppCore.Models.Account;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authentication;
+using StajAppCore.Services.MessageSending;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using StajAppCore.Services.Repositories.RepositoryBuilder;
 
@@ -17,10 +19,12 @@ namespace StajAppCore.Controllers
     {
         private IRepositoryBuilder RepositoryBuilder;
         private RoleMaster RM;
-        private PasswdHesher<User> PasswdHesh;
+        private PasswdHesher<IHesh> PasswdHesh;
+        private IMass MailSender;
 
-        public AccountController(RoleMaster rm, PasswdHesher<User> ph, IRepositoryBuilder rb)
+        public AccountController(RoleMaster rm, PasswdHesher<IHesh> ph, IRepositoryBuilder rb, IMass sm)
         {
+            MailSender = sm;
             RepositoryBuilder = rb;
             PasswdHesh = ph;
             RM = rm;
@@ -32,29 +36,78 @@ namespace StajAppCore.Controllers
             if (ModelState.IsValid)
             {
                 var newUser = (User)model;
-                var result = await RepositoryBuilder.AuthRepository.ActionQueueAsync( async i => 
-                {
-                    User user = await i.GetUserByEmailAsync(model.Email, false);
-                    if (user == null)
-                    {
-                        PasswdHesh.SetHeshContSalt(newUser, newUser.Password);
-                        await i.AddObjAsync(newUser);
-                        return true;
-                    }
-                    else
-                        return false;
-                }, true);
+                var result = await RepositoryBuilder.AuthRepository.ActionQueueAsync(async i =>
+               {
+                   User user = await i.GetUserByEmailAsync(model.Email, false);
+                   if (user == null)
+                   {
+                       User nConfirmUs = await i.GetUserByEmailAsync(model.Email, false, false);
+                       if (nConfirmUs != null)
+                       {
+                           await i.DeleteUserGuideInUserIdAsync(nConfirmUs.Id);
+                           await i.DeleteObjAsync(nConfirmUs.Id);
+                           await i.SaveChangesAsync();
+                       }
 
-                if (result)
-                {
-                    await Authenticate(newUser);
-                    return RedirectToAction("Index", "Main");
-                }
-                else
-                    ModelState.AddModelError("err", "Такой пользователь уже существует!");
+                       PasswdHesh.SetHeshContSalt(newUser, newUser.Password);
+                       await i.AddObjAsync(newUser);
+
+                       UserGuid usg = new UserGuid();
+                       usg.UserId = newUser.Id;
+                       Guid uguid = Guid.NewGuid();
+                       string guideValue = uguid.ToString();
+                       PasswdHesh.SetHeshContSalt(usg, guideValue);
+                       await i.AddUserGuideAsync(usg);
+                       await i.SaveChangesAsync();                       
+                       
+                       var task = MailSender.SendMessage(
+                           newUser.Email, 
+                           "Подтверждение почты для учётной записи.", 
+                           $"https://{HttpContext.Request.Host.Value.ToString()}/Account/AccountConfirm?id={usg.Id}&guid={guideValue}".TegLinq());
+                       return true;
+                   }
+                   else
+                   {
+                       ModelState.AddModelError("err", "Такой пользователь уже существует!");
+                       return false;
+                   }
+               }, true);
+
+                if (result)                
+                    return GetMainVue(new MsgVue("На указанную почту отправлено письмо для подтверждения аккаунта!"));                
             }
 
             return GetMainVue(new MsgVue("Что-то не так!", ModelState.Root.Children));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AccountConfirm(int id, string guid)
+        {
+            var result = await RepositoryBuilder.AuthRepository.ActionQueueAsync(async i =>
+            {
+                UserGuid ug = await i.GetUserGuideByIdAsync(id);
+                if (ug == null || ug.UserId == null)
+                    return false;
+
+                User us = await i.GetObjByIdAsync((int)ug.UserId);
+                if (us == null)
+                    return false;
+
+                if (PasswdHesh.VerifyPasswd(ug, guid))
+                {
+                    us.Active = true;
+                    await Authenticate(us);
+                    await i.DeleteUserGuideAsync(id);
+                    return true;
+                }
+
+                return false;
+            }, true);
+
+            if (!result)
+                return GetMainVue(new MsgVue("Ссылка недействительна!"));
+
+            return RedirectToAction("Index", "Main");
         }
 
         [HttpPost]
