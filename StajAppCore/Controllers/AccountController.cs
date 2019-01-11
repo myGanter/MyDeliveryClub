@@ -36,9 +36,11 @@ namespace StajAppCore.Controllers
             if (ModelState.IsValid)
             {
                 var newUser = (User)model;
+                UserGuid usg = new UserGuid();
+                string guideValue = "";
                 var result = await RepositoryBuilder.AuthRepository.ActionQueueAsync(async i =>
-               {
-                   User user = await i.GetUserByEmailAsync(model.Email, false);
+                {
+                   User user = await i.GetUserByEmailAsync(model.Email, false);                   
                    if (user == null)
                    {
                        User nConfirmUs = await i.GetUserByEmailAsync(model.Email, false, false);
@@ -51,19 +53,13 @@ namespace StajAppCore.Controllers
 
                        PasswdHesh.SetHeshContSalt(newUser, newUser.Password);
                        await i.AddObjAsync(newUser);
-
-                       UserGuid usg = new UserGuid();
+                       
                        usg.UserId = newUser.Id;
                        Guid uguid = Guid.NewGuid();
-                       string guideValue = uguid.ToString();
+                       guideValue = uguid.ToString();
                        PasswdHesh.SetHeshContSalt(usg, guideValue);
-                       await i.AddUserGuideAsync(usg);
-                       await i.SaveChangesAsync();                       
-                       
-                       var task = MailSender.SendMessage(
-                           newUser.Email, 
-                           "Подтверждение почты для учётной записи.", 
-                           $"https://{HttpContext.Request.Host.Value.ToString()}/Account/AccountConfirm?id={usg.Id}&guid={guideValue}".TegLinq());
+                       await i.AddUserGuideAsync(usg);                      
+                                             
                        return true;
                    }
                    else
@@ -71,10 +67,17 @@ namespace StajAppCore.Controllers
                        ModelState.AddModelError("err", "Такой пользователь уже существует!");
                        return false;
                    }
-               }, true);
+                }, true);
 
-                if (result)                
-                    return GetMainVue(new MsgVue("На указанную почту отправлено письмо для подтверждения аккаунта!"));                
+                if (result)
+                {
+                    var task = MailSender.SendMessage(
+                           newUser.Email,
+                           "Подтверждение почты для учётной записи.",
+                           $"https://{HttpContext.Request.Host.Value.ToString()}/Account/AccountConfirm?id={usg.Id}&guid={guideValue}".TegLinq());
+
+                    return GetMainVue(new MsgVue("В течении 5 минут на указанную почту поступит письмо для подтверждения аккаунта!"));                
+                }          
             }
 
             return GetMainVue(new MsgVue("Что-то не так!", ModelState.Root.Children));

@@ -1,6 +1,8 @@
-﻿using MimeKit;
+﻿using System;
+using MimeKit;
 using System.IO;
 using MailKit.Net.Smtp;
+using StajAppCore.Models;
 using System.Threading.Tasks;
 
 namespace StajAppCore.Services.MessageSending.MailMass
@@ -15,10 +17,13 @@ namespace StajAppCore.Services.MessageSending.MailMass
             set => mailPage = File.ReadAllText(value);    
         }
 
-        public MailMassService(MailOptions options)
+        private ExceptionDBLog ExDb;
+
+        public MailMassService(MailOptions options, ExceptionDBLog exDb)
         {            
             Options = options;
-        }
+            ExDb = exDb;
+        }        
 
         public Task SendMessage(string to, string header, string message) => Task.Run(async () =>
         {
@@ -43,7 +48,15 @@ namespace StajAppCore.Services.MessageSending.MailMass
                     await client.DisconnectAsync(true);
                 }
             }
-            catch { } //не работает запись в ошибок в бд
+            catch(Exception ex)
+            {
+                ExDb.OnException(new DBEroorModel()
+                {
+                    Exception = ex.Message,
+                    StackTrace = ex.StackTrace,
+                    Data = DateTime.Now                    
+                });
+            } 
         });
     }
 }

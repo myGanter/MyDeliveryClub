@@ -22,6 +22,11 @@ namespace StajAppCore.Services
             error.Data = DateTime.Now;
             error.Url = context.HttpContext?.Request.Host + context.HttpContext?.Request.Path;
 
+            OnException(error);
+        }
+
+        public void OnException(DBEroorModel error)
+        {
             AppDB.Errors.Add(error);
             AppDB.SaveChanges();
         }

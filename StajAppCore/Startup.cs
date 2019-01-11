@@ -86,7 +86,13 @@ namespace StajAppCore
                                       GetSection("EmailConfiguration").
                                       Get<MailOptions>();
             MailMassService.MailPagePath = $"{RootPath}//wwwroot//html//MailPage.html";
-            services.AddScoped<IMass>(provider => new MailMassService(mailSendOpt));
+            services.AddScoped<IMass>(provider => 
+                new MailMassService(mailSendOpt, 
+                    new ExceptionDBLog(
+                        new ApplicationContext(
+                            new DbContextOptionsBuilder<ApplicationContext>()
+                                .UseSqlServer(connection)
+                                    .Options))));
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
