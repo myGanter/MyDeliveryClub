@@ -42,25 +42,55 @@ namespace StajAppCore.Models
                 .WithMany(s => s.OrderProduct)
                 .HasForeignKey(sc => sc.ProductId);
 
-            string adminEmail = "qwerty@mail.ru";
-            string adminPassword = "qwerty";
-
             RoleMaster rm = new RoleMaster();
             Role[] roles = rm.GetRoles();
 
-            User adminUser = new User
+            string passwd = "qweqwe";
+            User[] uss = 
             {
-                Id = 1,
-                Email = adminEmail,
-                Password = adminPassword,
-                RoleId = roles.FirstOrDefault(i => i.Name == "Администратор").Id,
-                Active = true
+                new User()
+                {
+                    Id = 1,
+                    Email = "admin@mail.ru",                    
+                    RoleId = roles.FirstOrDefault(i => i.Name == "Администратор").Id,
+                    Active = true
+                },
+                new User()
+                {
+                    Id = 2,
+                    Email = "user1@mail.ru",                    
+                    RoleId = roles.FirstOrDefault(i => i.Name == "Пользователь").Id,
+                    Active = true
+                },
+                new User()
+                {
+                    Id = 3,
+                    Email = "user2@mail.ru",                   
+                    RoleId = roles.FirstOrDefault(i => i.Name == "Пользователь").Id,
+                    Active = true
+                },
+                new User()
+                {
+                    Id = 4,
+                    Email = "courier1@mail.ru",     
+                    RoleId = roles.FirstOrDefault(i => i.Name == "Курьер").Id,
+                    Active = true
+                },
+                new User()
+                {
+                    Id = 5,
+                    Email = "courier2@mail.ru",
+                    RoleId = roles.FirstOrDefault(i => i.Name == "Курьер").Id,
+                    Active = true
+                }
             };
+
             PasswdHesher<User> hesher = new PasswdHesher<User>();
-            hesher.SetHeshContSalt(adminUser, adminPassword);
+            for (int i = 0; i < uss.Length; i++)
+                hesher.SetHeshContSalt(uss[i], passwd);
 
             modelBuilder.Entity<Role>().HasData(roles);
-            modelBuilder.Entity<User>().HasData(adminUser);
+            modelBuilder.Entity<User>().HasData(uss);
 
             base.OnModelCreating(modelBuilder);
         }
