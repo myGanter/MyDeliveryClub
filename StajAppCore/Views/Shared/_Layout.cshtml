@@ -59,9 +59,14 @@
                 <component v-bind:is="currentView"></component>
             </transition>
         </div>
+
+        <div class="ds-n">
+            <div id="Controller">@ViewData["Controller"]</div>
+            <div id="Method">@ViewData["Method"]</div>
+        </div>
     </div>
 
-    @RenderBody()
+    @RenderBody()    
 
     <footer>
         

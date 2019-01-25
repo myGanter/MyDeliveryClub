@@ -89,7 +89,7 @@
 </template>
 
 <script>
-    Vue.component('tab2', {
+    Vue.component('ActiveOrders', {
         template: '#temp2',
         data: function () {
             return {
@@ -103,7 +103,7 @@
         },
         methods: {
             GetOrders: function () {
-                axios.get('User/GetUserOrders').
+                axios.get('GetUserOrders').
                     then(response => {
                         this.activeOrders = response.data;
                         console.log(this.activeOrders);
@@ -116,7 +116,7 @@
                     })
             },
             Confirm: function (id, cancelled) {
-                axios.get('User/ConfirmUserOrder?id=' + id + '&cancelled=' + cancelled).
+                axios.get('ConfirmUserOrder?id=' + id + '&cancelled=' + cancelled).
                     then(response => {
                         this.GetOrders();
                         HostApp.showMsg(response.data);

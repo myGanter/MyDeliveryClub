@@ -11,7 +11,7 @@
 </template>
 
 <script>
-    Vue.component('tab2', {
+    Vue.component('Couriers', {
         template: '#temp2'
     })
 </script>

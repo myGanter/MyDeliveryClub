@@ -47,7 +47,7 @@
 </template>
 
 <script>
-    Vue.component('tab3', {
+    Vue.component('Shops', {
         template: '#temp3'
     })
 </script>

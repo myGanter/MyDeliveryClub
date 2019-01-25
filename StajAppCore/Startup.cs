@@ -57,21 +57,21 @@ namespace StajAppCore
             RoleMaster.AddRoles(new Role[] { admin, user, courier });
 
             RoleMaster.AddRoleException(admin.Name);
-            RoleMaster.AddRoleForView(admin.Name, "AdminPanel", new MenuItem[] 
+            RoleMaster.AddRoleForView(admin.Name, "Admin", "AdminPanel", new MenuItem[] 
             {
-                new MenuItem() { Name = "Пользователи", Url = "tab1" },
-                new MenuItem() { Name = "Курьеры", Url = "tab2" },
-                new MenuItem() { Name = "Магазины", Url = "tab3" }
+                new MenuItem() { Name = "Пользователи", Url = "Users" },
+                new MenuItem() { Name = "Курьеры", Url = "Couriers" },
+                new MenuItem() { Name = "Магазины", Url = "Shops" }
             });
-            RoleMaster.AddRoleForView(user.Name, "ClientPanel", new MenuItem[]
+            RoleMaster.AddRoleForView(user.Name, "User", "ClientPanel", new MenuItem[]
             {
-                new MenuItem() { Name = "Магазины", Url = "tab1" },
-                new MenuItem() { Name = "Активные заказы", Url = "tab2" }
+                new MenuItem() { Name = "Магазины", Url = "Shops" },
+                new MenuItem() { Name = "Активные заказы", Url = "ActiveOrders" }
             });
-            RoleMaster.AddRoleForView(courier.Name, "CourierPanel", new MenuItem[]
+            RoleMaster.AddRoleForView(courier.Name, "Courier", "CourierPanel", new MenuItem[]
             {
-                new MenuItem() { Name = "Заказы пользователей", Url = "tab1" },
-                new MenuItem() { Name = "Принятые заказы", Url = "tab2" }
+                new MenuItem() { Name = "Заказы пользователей", Url = "AllOrders" },
+                new MenuItem() { Name = "Принятые заказы", Url = "ActiveCourierOrders" }
             });
 
             services.AddTransient<IRepositoryBuilder, RepositoryBuilder>();

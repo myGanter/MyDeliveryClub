@@ -1,4 +1,5 @@
 ﻿using StajAppCore.Models;
+using StajAppCore.Services;
 using System.Threading.Tasks;
 using StajAppCore.Models.Auth;
 using StajAppCore.Models.Store;
@@ -12,12 +13,8 @@ namespace StajAppCore.Controllers
 {
     public class UserController : BaseController
     {
-        private IRepositoryBuilder RepositoryBuilder;
-
-        public UserController(IRepositoryBuilder rb)
-        {
-            RepositoryBuilder = rb;
-        }
+        public UserController(IRepositoryBuilder rb, RoleMaster rm) : base(rb, rm)
+        { }
 
         [HttpPost]
         [Authorize(Roles = Client)]
@@ -29,23 +26,23 @@ namespace StajAppCore.Controllers
                 List<Product> products = (List<Product>)order.Products.ToIEnumerableProduct();
                 newOreder.UserId = (await RepositoryBuilder.AuthRepository.GetUserByEmailAsync(User.Identity.Name, false)).Id;
 
-                var result = await RepositoryBuilder.OrderRepository.ActionQueueAsync( async i => 
-                {                   
-                    await i.AddObjAsync(newOreder);
-                    await RepositoryBuilder.ProductRepository.AddRangeAsync(products);
+                var result = await RepositoryBuilder.OrderRepository.ActionQueueAsync(async i =>
+               {
+                   await i.AddObjAsync(newOreder);
+                   await RepositoryBuilder.ProductRepository.AddRangeAsync(products);
 
-                    for (int j = 0; j < products.Count; j++)
-                    {
-                        newOreder.OrderProduct.Add(new OrderProduct()
-                        {
-                            OrderId = newOreder.Id,
-                            ProductId = products[j].Id,
-                            CountProduct = order.Products[j].Count
-                        });
-                    }
+                   for (int j = 0; j < products.Count; j++)
+                   {
+                       newOreder.OrderProduct.Add(new OrderProduct()
+                       {
+                           OrderId = newOreder.Id,
+                           ProductId = products[j].Id,
+                           CountProduct = order.Products[j].Count
+                       });
+                   }
 
-                    return true;
-                }, true );
+                   return true;
+               }, true);
 
                 return Data("Ваш заказ успешно добавлен!");
             }
@@ -68,26 +65,32 @@ namespace StajAppCore.Controllers
         [Authorize(Roles = Client)]
         public async Task<IActionResult> ConfirmUserOrder(int id, bool cancelled)
         {
-            var result = await RepositoryBuilder.OrderRepository.ActionQueueAsync( async i => 
-            {
-                User us = await RepositoryBuilder.AuthRepository.GetUserByEmailAsync(User.Identity.Name, false);
-                Order usOrder = await i.GetObjByIdAsync(id);
-                if (usOrder != null && usOrder.UserId == us.Id)
-                {
-                    if (cancelled)
-                        usOrder.UserCancelled = true;
-                    else
-                        usOrder.Delivered = true;
-                    return true;
-                }
-                return false;
+            var result = await RepositoryBuilder.OrderRepository.ActionQueueAsync(async i =>
+           {
+               User us = await RepositoryBuilder.AuthRepository.GetUserByEmailAsync(User.Identity.Name, false);
+               Order usOrder = await i.GetObjByIdAsync(id);
+               if (usOrder != null && usOrder.UserId == us.Id)
+               {
+                   if (cancelled)
+                       usOrder.UserCancelled = true;
+                   else
+                       usOrder.Delivered = true;
+                   return true;
+               }
+               return false;
 
-            }, true);
+           }, true);
 
             if (result)
                 return Data("Готово!");
 
             return Data(":(");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ActiveOrders() => await GetCurrentView("User", "ActiveOrders", new MsgVue("Авторизируйтесь"));
+
+        [HttpGet]
+        public async Task<IActionResult> Shops() => await GetCurrentView("User", "Shops", new MsgVue("Авторизируйтесь"));
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using StajAppCore.Models;
 using StajAppCore.Services;
 using System.Threading.Tasks;
@@ -17,17 +16,13 @@ namespace StajAppCore.Controllers
 {
     public class AccountController : BaseController
     {
-        private IRepositoryBuilder RepositoryBuilder;
-        private RoleMaster RM;
         private PasswdHesher<IHesh> PasswdHesh;
         private IMass MailSender;
 
-        public AccountController(RoleMaster rm, PasswdHesher<IHesh> ph, IRepositoryBuilder rb, IMass sm)
+        public AccountController(RoleMaster rm, PasswdHesher<IHesh> ph, IRepositoryBuilder rb, IMass sm) : base(rb, rm)
         {
             MailSender = sm;
-            RepositoryBuilder = rb;
             PasswdHesh = ph;
-            RM = rm;
         }
 
         [HttpPost]
@@ -76,11 +71,11 @@ namespace StajAppCore.Controllers
                            "Подтверждение почты для учётной записи.",
                            $"https://{HttpContext.Request.Host.Value.ToString()}/Account/AccountConfirm?id={usg.Id}&guid={guideValue}".TegLinq());
 
-                    return GetMainVue(new MsgVue("В течении 5 минут на указанную почту поступит письмо для подтверждения аккаунта!"));                
+                    return GetHelloView(new MsgVue("В течении 5 минут на указанную почту поступит письмо для подтверждения аккаунта!"));                
                 }          
             }
 
-            return GetMainVue(new MsgVue("Что-то не так!", ModelState.Root.Children));
+            return GetHelloView(new MsgVue("Что-то не так!", ModelState.Root.Children));
         }
 
         [HttpGet]
@@ -108,7 +103,7 @@ namespace StajAppCore.Controllers
             }, true);
 
             if (!result)
-                return GetMainVue(new MsgVue("Ссылка недействительна!"));
+                return GetHelloView(new MsgVue("Ссылка недействительна!"));
 
             return RedirectToAction("Index", "Main");
         }
@@ -129,7 +124,7 @@ namespace StajAppCore.Controllers
                     ModelState.AddModelError("err", "Неверный логин или пароль");
             }
 
-            return GetMainVue(new MsgVue("Что-то не так!", ModelState.Root.Children));          
+            return GetHelloView(new MsgVue("Что-то не так!", ModelState.Root.Children));          
         }
 
         [HttpGet]
@@ -144,20 +139,13 @@ namespace StajAppCore.Controllers
             var claims = new List<Claim>
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, RM.GetRole((int)user.RoleId)?.Name)
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, RoleM.GetRole((int)user.RoleId)?.Name)
             };
  
             ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,
                 ClaimsIdentity.DefaultRoleClaimType);
   
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
-        }
-
-        private IActionResult GetMainVue(MsgVue msg)
-        {
-            ViewData["Roles"] = RM.GetRoles().Where(i => RM.ValidationAllowed(i.Id));           
-            ViewData["ERROR"] = msg;
-            return View("~/Views/Main/Hello.cshtml", null);
         }
     }
 }

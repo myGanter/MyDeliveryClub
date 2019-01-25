@@ -7,7 +7,7 @@
 </template>
 
 <script>
-    Vue.component('tab1', {
+    Vue.component('Index', {
         template: '#temp1'
     })
 </script>

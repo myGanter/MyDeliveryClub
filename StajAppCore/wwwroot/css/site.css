@@ -5,6 +5,10 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
+.ds-n{
+    display: none;
+}
+
 .tabs-collor {
     color: #efefef;
 }

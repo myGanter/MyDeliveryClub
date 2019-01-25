@@ -109,7 +109,7 @@
 </template>
 
 <script>
-    Vue.component('tab1', {
+    Vue.component('Shops', {
         template: '#temp1',
         data: function () {
             return {
@@ -176,7 +176,7 @@
                         });
                     }
                 console.log(this.order);  
-                axios.post('User/AddUniqOrder',
+                axios.post('AddUniqOrder',
                     this.order
                 ).
                     then(response => {

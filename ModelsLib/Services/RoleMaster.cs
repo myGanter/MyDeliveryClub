@@ -10,12 +10,12 @@ namespace StajAppCore.Services
     {
         private static List<Role> AllRoles = new List<Role>();
         private static List<string> RolesException = new List<string>();
-        private static Dictionary<string, Tuple<string, IEnumerable<MenuItem>>> RoleForView = new Dictionary<string, Tuple<string, IEnumerable<MenuItem>>>();
+        private static Dictionary<string, Tuple<string, string, IEnumerable<MenuItem>>> RoleForView = new Dictionary<string, Tuple<string, string, IEnumerable<MenuItem>>>();
 
         public RoleMaster()
         { }
 
-        public Tuple<string, IEnumerable<MenuItem>> GetViewRole(string name) => RoleForView.FirstOrDefault(i => i.Key == name).Value;
+        public Tuple<string, string, IEnumerable<MenuItem>> GetViewRole(string name) => RoleForView.FirstOrDefault(i => i.Key == name).Value;
 
         public bool ValidationAllowed(string name)
         {
@@ -42,6 +42,6 @@ namespace StajAppCore.Services
 
         public static void AddRoleException(string roleName) => RolesException.Add(roleName);
 
-        public static void AddRoleForView(string role, string view, IEnumerable<MenuItem> meny) => RoleForView.Add(role, new Tuple<string, IEnumerable<MenuItem>>(view, meny));
+        public static void AddRoleForView(string role, string controller, string view, IEnumerable<MenuItem> meny) => RoleForView.Add(role, new Tuple<string, string, IEnumerable<MenuItem>>(view, controller, meny));
     }
 }

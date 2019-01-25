@@ -1,4 +1,5 @@
 ﻿using StajAppCore.Models;
+using StajAppCore.Services;
 using System.Threading.Tasks;
 using StajAppCore.Models.Auth;
 using Microsoft.AspNetCore.Mvc;
@@ -12,12 +13,8 @@ namespace StajAppCore.Controllers
 {
     public class CourierController : BaseController
     {
-        private IRepositoryBuilder RepositoryBuilder;
-
-        public CourierController(IRepositoryBuilder rb)
-        {
-            RepositoryBuilder = rb;
-        }
+        public CourierController(IRepositoryBuilder rb, RoleMaster rm) : base(rb, rm)
+        { }
 
         [HttpGet]
         [Authorize(Roles = Courier)]
@@ -84,5 +81,11 @@ namespace StajAppCore.Controllers
 
             return Data(":("); 
         }
+
+        [HttpGet]
+        public async Task<IActionResult> AllOrders() => await GetCurrentView("Courier", "AllOrders", new MsgVue("Авторизируйтесь"));
+
+        [HttpGet]
+        public async Task<IActionResult> ActiveCourierOrders() => await GetCurrentView("Courier", "ActiveCourierOrders", new MsgVue("Авторизируйтесь"));
     }
 }
