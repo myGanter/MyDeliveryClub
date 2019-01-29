@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using StajAppCore.Services.Repositories.RepositoryBuilder;
+using static Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary;
 
 namespace StajAppCore.Controllers
 {
@@ -28,6 +29,8 @@ namespace StajAppCore.Controllers
         protected JsonResult Data(string msg) => Json(new MsgVue(msg));
 
         protected JsonResult Data(string msg, IReadOnlyList<ModelStateEntry> info) => Json(new MsgVue(msg, info));
+
+        protected JsonResult Data(string msg, ValueEnumerable errors) => Json(new MsgVue(msg, errors));
 
         protected async Task<IActionResult> GetCurrentView(string controller, string method, MsgVue ifHello = null)
         {

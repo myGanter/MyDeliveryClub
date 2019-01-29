@@ -63,10 +63,24 @@
                             <div class="modal-body">
                                 <div class="form-group">
                                     <label for="desc">Ваш комментарий</label>
+
+                                    <div v-if="showResultMsg">
+                                        <p class="err" v-for="e in resultMsg['Description']">
+                                            {{ e }}
+                                        </p>
+                                    </div>
+
                                     <textarea rows="3" type="text" v-model="order.Description" class="form-control" id="desc"></textarea>
                                 </div>
                                 <div class="form-group">
                                     <label for="addres">Адрес доставки</label>
+
+                                    <div v-if="showResultMsg">
+                                        <p class="err" v-for="e in resultMsg['DeliveryAddress']">
+                                            {{ e }}
+                                        </p>
+                                    </div>
+
                                     <input type="text" v-model="order.DeliveryAddress" class="form-control" id="addres">
                                 </div>
 
@@ -75,15 +89,33 @@
                                         <h3>Товар №1</h3>
                                         <div class="form-group">
                                             <label>Название товара</label>
+
+                                            <div v-if="showResultMsg">
+                                                <p class="err" v-for="e in resultMsg['Products[0].Name']">
+                                                    {{ e }}
+                                                </p>
+                                            </div>
+
                                             <input type="text" v-model="order.Products[0].Name" class="form-control">
                                         </div>
                                         <div class="form-group">
-                                            <label>Описание товара (Укажите адрес и название магазина)</label>                                 
+                                            <label>Описание товара (Укажите адрес и название магазина)</label>
+
+                                            <div v-if="showResultMsg">
+                                                <p class="err" v-for="e in resultMsg['Products[0].Description']">
+                                                    {{ e }}
+                                                </p>
+                                            </div>
+
                                             <textarea rows="3" type="text" v-model="order.Products[0].Description" class="form-control"></textarea>
                                         </div>
                                         <div class="form-group">
                                             <label>Цена</label>
-                                            <input type="text" v-model="order.Products[0].Price" class="form-control">
+                                            <select v-model="order.Products[0].Price" class="form-control">
+                                                <option value="100" selected>до 100</option>
+                                                <option value="1000">до 1000</option>
+                                                <option value="10000">до 10000</option>
+                                            </select>                                            
                                         </div>
                                         <div class="form-group">
                                             <label>Колличество : {{order.Products[0].Count}} шт.</label>
@@ -117,9 +149,11 @@
                 {
                     Description: '',
                     DeliveryAddress: '',
-                    Products: [{ Name: '', Description: '', Price: 1, Count: 1 }]
+                    Products: [{ Name: '', Description: '', Price: 100, Count: 1 }]
                 },
-                orderCounter: 1
+                orderCounter: 1,
+                resultMsg: {},
+                showResultMsg: false
             }
         },
         methods: {
@@ -131,11 +165,17 @@
                         '<h3>Товар №' + this.orderCounter + '</h3>' +
                         '<div class="form-group"> <button id="delBatt' + this.orderCounter + '" type="button" class="btn btn-outline-danger">Удалить товар</button> </div>' +
                         '<div class="form-group"> <label>Название товара</label>' +
+                        '<div class="errname"></div>' +
                         '<input id="nameOrder' + this.orderCounter + '" type="text" class="form-control"> </div>' +
                         '<div class="form-group"> <label>Описание товара (Укажите адрес и название магазина)</label>' +
+                        '<div class="errdescription"></div>' +
                         '<textarea rows="3" id="descriptionOrder' + this.orderCounter + '" type="text" class="form-control"></textarea> </div>' +
                         '<div class="form-group"> <label>Цена</label>' +
-                        '<input id="priceOrder' + this.orderCounter + '" type="text" value="1" class="form-control"> </div>' +
+                        '<select id="priceOrder' + this.orderCounter + '" class="form-control">' +
+                        '<option value="100" selected>до 100</option>' +
+                        '<option value="1000">до 1000</option>' +
+                        '<option value="10000">до 10000</option>' +
+                        '</select></div>' +
                         '<div class="form-group"> <label>Колличество : <label id="countOrder' + this.orderCounter + '">1</label> шт.</label>' +
                         '<button type="button" id="removeCout' + this.orderCounter + '" class="btn btn-outline-danger mr-1">-</button>' +
                         '<button type="button" id="addCout' + this.orderCounter + '" class="btn btn-outline-success">+</button>' +
@@ -181,7 +221,18 @@
                 ).
                     then(response => {
                         console.log(response);
-                        HostApp.showMsg(response.data);
+
+                        this.showResultMsg = false;
+                        $(".errname").html('');
+                        $(".errdescription").html('');
+                        if (response.data.errors !== null) {
+                            this.resultMsg = response.data.errors;
+                            this.showResultMsg = true;
+                            this.addErr(".errname", 'Name');
+                            this.addErr(".errdescription", 'Description');
+                        }                            
+
+                        HostApp.showMsg(response.data); 
                     })
                     .catch(error => {
                         console.log(error);
@@ -192,8 +243,17 @@
                 this.order = {
                     Description: '',
                     DeliveryAddress: '',
-                    Products: [{ Name: '', Description: '', Price: 1, Count: 1 }]
+                    Products: [{ Name: '', Description: '', Price: 100, Count: 1 }]
                 };
+            },
+            addErr: function (el, prop) {
+                var els = $(el);
+                for (var i = 0; i < els.length; i++) {
+                    var ii = i + 1;
+                    if (typeof this.resultMsg['Products[' + ii + '].' + prop] !== "undefined")
+                        for (var j = 0; j < this.resultMsg['Products[' + ii + '].' + prop].length; j++)
+                            $(els[i]).append('<p class="err">' + this.resultMsg['Products[' + ii + '].' + prop][j] + '</p>');
+                }
             }
         }
     })

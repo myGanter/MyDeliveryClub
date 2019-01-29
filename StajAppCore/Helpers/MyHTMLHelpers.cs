@@ -9,6 +9,18 @@ namespace StajAppCore.Helpers
 {
     public static class MyHTMLHelpers
     {
+        public static HtmlString IsErrs(this IHtmlHelper html, dynamic obj, string prop)
+        {
+            if (obj["ERROR"] != null && obj["ERROR"].Errors != null && obj["ERROR"].Errors.ContainsKey(prop))
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (var i in obj["ERROR"].Errors[prop])
+                    sb.Append($"<p class=\"err\">{i}</p>");
+                return new HtmlString(sb.ToString());
+            }
+            return new HtmlString(" "); 
+        }
+
         public static string RootPath = "";
 
         public static HtmlString BuildMenu(this IHtmlHelper html, IEnumerable<MenuItem> menyItems)

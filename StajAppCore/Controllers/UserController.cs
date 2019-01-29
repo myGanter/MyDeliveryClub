@@ -47,7 +47,8 @@ namespace StajAppCore.Controllers
                 return Data("Ваш заказ успешно добавлен!");
             }
 
-            return Data("Ваш заказ не прошёл проверку.", ModelState.Root.Children);
+            return Data("Ваш заказ не прошёл проверку. Дополнительная информация в форме создания заявки!", ModelState.Values);
+            //return Data("Ваш заказ не прошёл проверку.", ModelState.Root.Children);
         }
 
         [HttpGet]

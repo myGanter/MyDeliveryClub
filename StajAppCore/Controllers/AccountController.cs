@@ -72,10 +72,12 @@ namespace StajAppCore.Controllers
                            $"https://{HttpContext.Request.Host.Value.ToString()}/Account/AccountConfirm?id={usg.Id}&guid={guideValue}".TegLinq());
 
                     return GetHelloView(new MsgVue("В течении 5 минут на указанную почту поступит письмо для подтверждения аккаунта!"));                
-                }          
+                }   
+                else
+                    return GetHelloView(new MsgVue("Не правильно введены данные", ModelState.Root.Children));
             }
 
-            return GetHelloView(new MsgVue("Что-то не так!", ModelState.Root.Children));
+            return GetHelloView(new MsgVue("Не правильно введены данные. Дополнительная информация в форме регистрации!", ModelState.Values));
         }
 
         [HttpGet]
@@ -119,12 +121,10 @@ namespace StajAppCore.Controllers
                 {
                     await Authenticate(user);
                     return RedirectToAction("Index", "Main");
-                }
-                else
-                    ModelState.AddModelError("err", "Неверный логин или пароль");
+                }                
             }
 
-            return GetHelloView(new MsgVue("Что-то не так!", ModelState.Root.Children));          
+            return GetHelloView(new MsgVue("Неправильный логин или пароль!"));          
         }
 
         [HttpGet]

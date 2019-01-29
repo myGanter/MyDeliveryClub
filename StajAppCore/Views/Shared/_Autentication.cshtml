@@ -1,4 +1,5 @@
 ﻿@using StajAppCore.Models;
+@using StajAppCore.Helpers;
 
 @if (ViewData["ERROR"] != null)
 {
@@ -85,22 +86,27 @@
 
                             <div class="form-group">
                                 <label for="name">Имя</label>
+                                @Html.IsErrs(ViewData, "Name")                            
                                 <input type="text" class="form-control" id="name" name="Name">
                             </div>
                             <div class="form-group">
                                 <label for="mail">Email</label>
+                                @Html.IsErrs(ViewData, "Email")
                                 <input type="text" class="form-control" id="mail" name="Email">
                             </div>
                             <div class="form-group">
                                 <label for="paswd">Пароль</label>
+                                @Html.IsErrs(ViewData, "Password")
                                 <input type="password" class="form-control" id="paswd" name="Password">
                             </div>
                             <div class="form-group">
                                 <label for="confirmPasswd">Пароль ещё раз</label>
+                                @Html.IsErrs(ViewData, "ConfirmPassword")
                                 <input type="password" class="form-control" id="confirmPasswd" name="ConfirmPassword">
                             </div>
                             <div class="form-group">
                                 <label for="phone">Телефон</label>
+                                @Html.IsErrs(ViewData, "Phone")
                                 <input type="text" class="form-control" id="phone" name="Phone">
                             </div>
                             <div class="form-group">

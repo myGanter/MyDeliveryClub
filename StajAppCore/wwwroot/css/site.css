@@ -48,3 +48,8 @@ body {
     background:#107187;
 }
 
+.err {
+    color: #d40000;
+    font-weight: lighter;
+}
+

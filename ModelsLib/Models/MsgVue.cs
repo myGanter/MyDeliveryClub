@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using static Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary;
 
 namespace StajAppCore.Models
 {
@@ -8,6 +10,7 @@ namespace StajAppCore.Models
         public MsgVue()
         {
             Information = new List<string>();
+            Errors = null;
         }
 
         public MsgVue(string message) : this()
@@ -18,6 +21,14 @@ namespace StajAppCore.Models
         public MsgVue(string message, IReadOnlyList<ModelStateEntry> info) : this(message)
         {
             InitInformation(info);
+        }
+
+        public MsgVue(string message, ValueEnumerable errors) : this(message)
+        {
+            Errors = errors.ToDictionary(
+                i => (string)i.GetType().GetProperty("Key").GetValue(i), 
+                i => i.Errors.Select(
+                    j => j.ErrorMessage).ToList());
         }
 
         private void InitInformation(IReadOnlyList<ModelStateEntry> info)
@@ -38,5 +49,7 @@ namespace StajAppCore.Models
         public string Message { get; set; }
 
         public List<string> Information { get; set; }
+
+        public Dictionary<string, List<string>> Errors { get; set; }
     }
 }
