@@ -241,9 +241,9 @@
                         });
                     })
                 this.order = {
-                    Description: '',
-                    DeliveryAddress: '',
-                    Products: [{ Name: '', Description: '', Price: 100, Count: 1 }]
+                    Description: this.order.Description,
+                    DeliveryAddress: this.order.DeliveryAddress,
+                    Products: [this.order.Products[0]]
                 };
             },
             addErr: function (el, prop) {
